@@ -244,6 +244,12 @@ static void help() {
   Serial.println(F("  status               - print state summary"));
   Serial.println(F("  formatdisk           - WIPE the USB drive and reboot"));
   Serial.println(F("  reboot               - software reset"));
+  if (is80)
+    Serial.println(F("  unforce80M           - revert to GP17-detected band, reboot"));
+  else
+    Serial.println(F("  force80M             - force 80M mode for older boards"));
+  Serial.println(F("                         (no GP17 detect); persists across"));
+  Serial.println(F("                         reboots and rewrites config.txt"));
 }
 
 static void status() {
@@ -458,17 +464,18 @@ static void exec(String line) {
     Serial.println(F("rebooting..."));
     delay(100);
     rp2040.reboot();
-  } else if (head == "force80") {
-    // Hidden: simulate 80M hardware by creating /force80.flag, wiping
-    // config.txt and rebooting so the 80M default config is written.
-    Serial.println(F("force80: writing /force80.flag, clearing config, rebooting..."));
+  } else if (head == "force80M" || head == "force80") {
+    // Pin /force80.flag on FatFS (persists across reboots), wipe config.txt
+    // so the 80M default is written on next boot, then reboot. For boards
+    // without the GP17 band-detect strap.
+    Serial.println(F("force80M: writing /force80.flag, clearing config, rebooting..."));
     bandWriteForceFlag();
     FatFS.remove("/config.txt");
     delay(200);
     rp2040.reboot();
-  } else if (head == "unforce80" || head == "force2m") {
-    // Hidden: remove force flag, wipe config, reboot → defaults back to GP17.
-    Serial.println(F("unforce80: removing /force80.flag, clearing config, rebooting..."));
+  } else if (head == "unforce80M" || head == "unforce80" || head == "force2m") {
+    // Remove force flag, wipe config, reboot → band falls back to GP17.
+    Serial.println(F("unforce80M: removing /force80.flag, clearing config, rebooting..."));
     bandRemoveForceFlag();
     FatFS.remove("/config.txt");
     delay(200);
