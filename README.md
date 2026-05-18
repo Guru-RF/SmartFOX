@@ -342,7 +342,7 @@ Easiest path when the device is already mounting as `SMARTFOX` and the firmware 
 
 ### Method B — hardware reset button (recovery)
 
-Use this if the device doesn't enumerate, the filesystem is corrupted, or you just prefer a physical workflow. There is a **tiny hole** on the enclosure next to the USB-C port — behind it sits the RP2040 `BOOTSEL` / reset button.
+Use this if the device doesn't enumerate, the filesystem is corrupted, or you just prefer a physical workflow. There is a **tiny hole** on the enclosure — behind it sits the RP2040 `BOOTSEL` / reset button.
 
 1. **Unplug** USB-C from the SmartFOX
 2. With a paperclip or SIM-ejector pin, **press and hold** the reset button through the tiny hole
