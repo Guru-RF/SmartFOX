@@ -325,7 +325,11 @@ Set `runWindow` to limit TX to certain hours, e.g. `"09:00-17:00"`. Outside the 
 
 **Pre‑built UF2 files are attached to every [GitHub release](https://github.com/Guru-RF/SmartFOX/releases).** You don't need to build the firmware yourself — grab `smartfox-vX.Y.Z.uf2` from the latest release's **Assets** section.
 
-To flash it:
+There are two ways to enter UF2 bootloader mode: software (via `config.txt`) or hardware (via the reset button).
+
+### Method A — software trigger (config file)
+
+Easiest path when the device is already mounting as `SMARTFOX` and the firmware is running.
 
 1. Open `config.txt` on the `SMARTFOX` drive
 2. Replace its contents with the single word `firmwareupdate`
@@ -335,6 +339,32 @@ To flash it:
 6. Drag the downloaded `smartfox-*.uf2` file onto the `RPI-RP2` drive
 7. The firmware will update and reboot automatically
    ✅ Your configuration (`config.txt`) remains untouched
+
+### Method B — hardware reset button (recovery)
+
+Use this if the device doesn't enumerate, the filesystem is corrupted, or you just prefer a physical workflow. There is a **tiny hole** on the enclosure next to the USB-C port — behind it sits the RP2040 `BOOTSEL` / reset button.
+
+1. **Unplug** USB-C from the SmartFOX
+2. With a paperclip or SIM-ejector pin, **press and hold** the reset button through the tiny hole
+3. While still holding it, **insert the USB-C cable**
+4. Keep holding for ~1 second after insertion, then release
+5. The device boots straight into UF2 bootloader mode and appears as `RPI-RP2`
+6. Drag the downloaded `smartfox-*.uf2` file onto `RPI-RP2`
+7. The firmware will update and reboot automatically
+   ✅ Your configuration (`config.txt`) remains untouched
+
+### Nuking the FAT filesystem (factory wipe)
+
+If `config.txt` or the FAT partition is so badly corrupted that even Method B + reflashing won't get the drive back, you can fully wipe the on-chip flash before reflashing the firmware. `flash_nuke.uf2` is a tiny RP2040 helper that erases the entire flash, then reboots back into UF2 mode.
+
+1. Enter UF2 bootloader mode via **Method B** above (hold reset, insert USB-C)
+2. Grab `flash_nuke.uf2` from the latest [GitHub release](https://github.com/Guru-RF/SmartFOX/releases) **Assets** section
+3. Drag `flash_nuke.uf2` onto the `RPI-RP2` drive
+4. The device erases the flash, reboots, and re-mounts as `RPI-RP2` again
+5. Drag the regular `smartfox-*.uf2` onto `RPI-RP2` to install firmware
+6. On first boot the firmware regenerates a fresh default `config.txt` for the detected band
+
+⚠️ A nuke wipes **everything** — `config.txt`, WAVs, RTTTLs, MODs, and any `force80.flag`. Only use it as a last resort; for a soft reset of just the config file, see [Restoring Default Configuration](#-restoring-default-configuration).
 
 ### Building from source (optional)
 

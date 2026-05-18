@@ -57,6 +57,8 @@ $RECYCLE.BIN/
 
 # --- Compiled firmware / build artifacts (CI publishes these on releases) ---
 *.uf2
+# ...except the upstream RP2040 flash-wipe helper, which ships alongside firmware in releases
+!flash_nuke.uf2
 *.elf
 *.bin
 *.hex

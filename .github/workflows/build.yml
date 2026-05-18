@@ -65,4 +65,6 @@ jobs:
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.stage.outputs.uf2 }}
+          files: |
+            ${{ steps.stage.outputs.uf2 }}
+            flash_nuke.uf2
